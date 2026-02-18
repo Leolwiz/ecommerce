@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="items.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <title>cart</title>
+</head>
+<body>
+    <div class="page">
+        <div class="sidebar">
+    <div class="icons">
+<i class="fa-regular fa-house" style="font-size: 25px;"></i>
+<p class="text"><a href="home.html"><a href="home.html">Home</a></p>
+</div>
+<div class="icons">
+    <i class="fa-solid fa-graduation-cap" style="font-size: 25px;"></i>
+<p class="text"><a href="tuitorials.html">Tuitorials</a></p> 
+</div>
+    
+    <div class="icons">
+        <i class="fa-solid fa-cart-shopping" style="font-size: 25px;" id="cart-icon"></i>
+        <span class="cart-count">0</span>
+      <p class="text">
+        <a href="Cart.html">Cart</a></p>
+    </div>
+    <div class="icons">
+<i class="fa-solid fa-truck-fast" style="font-size: 25px;"></i>
+<p class="text"><a href="Myorders.html">My Orders</a></p>
+    </div>
+    <div class="icons">
+<i class="fa-solid fa-bookmark" style="font-size: 25px;"></i>
+<p class="text"><a href="Wishlist.html">Wishlist</a></p>
+    </div>
+    <div class="icons">
+<i class="fa-solid fa-circle-user" style="font-size: 25px;"></i>
+<p class="text"><a href="Account.html">Account</a></p>
+    </div>
+    <div class="icons">
+<i class="fa-solid fa-gear" style="font-size: 25px;"></i>
+<p class="text"><a href="settings.html">Settings</a></p>
+    </div>
+</div>
+<div class="main-page">
+    <div class="top">
+        <div class="name">
+            <p style="font-size: 30px;">ShopHub</p>
+            <input type="text" placeholder="search product"
+                style="width: 40vw; height: 6vh; border-radius: 8px; border: 1px solid black;">
+            <i class="fa-solid fa-circle-user" style="font-size: 25px;"></i>
+
+            <div class="cart-container">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding: 40px;">
+        <h2>Your Cart</h2>
+        <div id="cart-items"></div>
+        <h3 id="cart-total" style="margin-top:20px;"></h3>
+        <button id="clear-cart"
+            style="margin-top:20px;padding:10px 20px;border:none;background:red;color:white;border-radius:6px;cursor:pointer;">
+            Clear Cart
+        </button>
+    </div>
+</div>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const cartItemsContainer = document.getElementById("cart-items");
+    const cartCounts = document.querySelectorAll(".cart-count");
+    const cartTotal = document.getElementById("cart-total");
+    const clearCartBtn = document.getElementById("clear-cart");
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    updateCartCount();
+    displayCart();
+
+    function updateCartCount() {
+        cartCounts.forEach(span => {
+            span.textContent = cart.length;
+        });
+    }
+
+    function displayCart() {
+
+        cartItemsContainer.innerHTML = "";
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+            cartTotal.textContent = "";
+            return;
+        }
+
+        let total = 0;
+
+        cart.forEach((item, index) => {
+
+            total += parseFloat(item.price);
+
+            const div = document.createElement("div");
+            div.style.display = "flex";
+            div.style.alignItems = "center";
+            div.style.gap = "20px";
+            div.style.marginBottom = "20px";
+            div.style.borderBottom = "1px solid #ddd";
+            div.style.paddingBottom = "10px";
+
+            div.innerHTML = `
+                <img src="${item.image}" width="80">
+                <div>
+                    <h4>${item.name}</h4>
+                    <p>$${item.price}</p>
+                </div>
+                <button data-index="${index}" 
+                    style="margin-left:auto;background:#ef4444;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">
+                    Remove
+                </button>
+            `;
+
+            cartItemsContainer.appendChild(div);
+        });
+
+        cartTotal.textContent = "Total: $" + total.toFixed(2);
+
+        // Remove item
+        document.querySelectorAll("[data-index]").forEach(button => {
+            button.addEventListener("click", function () {
+                const index = this.getAttribute("data-index");
+                cart.splice(index, 1);
+                localStorage.setItem("cart", JSON.stringify(cart));
+                updateCartCount();
+                displayCart();
+            });
+        });
+    }
+
+    // Clear cart
+    clearCartBtn.addEventListener("click", function () {
+        cart = [];
+        localStorage.removeItem("cart");
+        updateCartCount();
+        displayCart();
+    });
+
+});
+</script>
+
+</body>
+</html>
